@@ -36,27 +36,31 @@ body {
   cursor: none;
 }
 
-/* CURSOR PERSONALIZADO */
-.cursor {
-  width: 12px; height: 12px;
-  border: 2px solid var(--dorado);
-  border-radius: 50%;
-  position: fixed;
-  pointer-events: none;
-  z-index: 9999;
-  transition: transform 0.15s ease, background 0.15s ease;
-  transform: translate(-50%, -50%);
+/* CURSOR PERSONALIZADO — solo desktop */
+.cursor, .cursor-dot { display: none; }
+@media (hover: hover) and (pointer: fine) {
+  body { cursor: none; }
+  .cursor {
+    display: block;
+    width: 12px; height: 12px;
+    border: 2px solid var(--dorado);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+  }
+  .cursor-dot {
+    display: block;
+    width: 4px; height: 4px;
+    background: var(--rojo);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+  }
 }
-.cursor-dot {
-  width: 4px; height: 4px;
-  background: var(--rojo);
-  border-radius: 50%;
-  position: fixed;
-  pointer-events: none;
-  z-index: 9999;
-  transform: translate(-50%, -50%);
-}
-body:hover .cursor { opacity: 1; }
 
 /* PANTALLA DE ENTRADA */
 #entrada {
@@ -1042,12 +1046,12 @@ const casos = [
 
 function renderCasos() {
   const grid = document.getElementById('casosGrid');
+  grid.innerHTML = '';
   casos.forEach((c, i) => {
     const div = document.createElement('div');
     div.className = 'caso-card';
-    div.dataset.idx = i;
     div.innerHTML = `
-      <div class="caso-header">
+      <div class="caso-header" style="cursor:pointer;">
         <span class="caso-bandera">${c.bandera}</span>
         <span class="caso-pais">${c.pais}</span>
         <span class="caso-promesa">"${c.promesa}"</span>
@@ -1067,9 +1071,13 @@ function renderCasos() {
         <div class="caso-dato">📌 ${c.dato}</div>
       </div>
     `;
-    div.querySelector('.caso-header').addEventListener('click', function() {
+    const header = div.querySelector('.caso-header');
+    function toggle(e) {
+      e.stopPropagation();
       div.classList.toggle('expandido');
-    });
+    }
+    header.addEventListener('click', toggle);
+    header.addEventListener('touchend', toggle, {passive: false});
     grid.appendChild(div);
   });
 }
@@ -1115,25 +1123,30 @@ const mitos = [
 
 function renderMitos() {
   const cont = document.getElementById('mitosContainer');
+  cont.innerHTML = '';
   mitos.forEach((m, i) => {
     const div = document.createElement('div');
     div.className = 'mito-card';
     div.innerHTML = `
-      <div class="mito-pregunta">
+      <div class="mito-pregunta" style="cursor:pointer;">
         <span class="mito-texto">${m.mito}</span>
-        <span class="mito-badge falso" id="badge-${i}">Mito</span>
+        <span class="mito-badge falso">Mito</span>
       </div>
       <div class="mito-respuesta">
         ${m.respuesta}
         ${m.fuente ? `<div class="mito-fuente">📚 ${m.fuente}</div>` : ''}
       </div>
     `;
-    div.querySelector('.mito-pregunta').addEventListener('click', function() {
+    const preg = div.querySelector('.mito-pregunta');
+    function toggleM(e) {
+      e.stopPropagation();
       const badge = div.querySelector('.mito-badge');
       const revelado = div.classList.toggle('revelado');
       badge.textContent = revelado ? 'Revelado ✓' : 'Mito';
       badge.className = revelado ? 'mito-badge verdad' : 'mito-badge falso';
-    });
+    }
+    preg.addEventListener('click', toggleM);
+    preg.addEventListener('touchend', toggleM, {passive: false});
     cont.appendChild(div);
   });
 }
