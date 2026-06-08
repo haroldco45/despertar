@@ -1037,7 +1037,7 @@ const casos = [
     dato: 'Es el único país del mundo donde el lujo total y el hambre masiva coexisten en la misma ciudad'
   },
   {
-    bandera: '🇺🇸', pais: 'UNIÓN SOVIÉTICA', promesa: 'El comunismo perfecto',
+    bandera: '☭', pais: 'UNIÓN SOVIÉTICA', promesa: 'El comunismo perfecto',
     promesas: ['Igualdad entre todos', 'El fin del capitalismo explotador', 'Una sociedad sin clases', 'El estado protege al obrero'],
     realidad: ['Gulag: 18 millones de presos políticos', 'Hambruna del Holodomor: 3.5M muertos en Ucrania', 'Cortina de hierro: prohibido salir del país', 'Colapsó después de 70 años de miseria'],
     dato: 'El "Libro Negro del Comunismo" (Courtois, 1997) documenta 94 millones de muertes atribuibles a regímenes comunistas del siglo XX'
@@ -1047,11 +1047,11 @@ const casos = [
 function renderCasos() {
   const grid = document.getElementById('casosGrid');
   grid.innerHTML = '';
-  casos.forEach((c, i) => {
+  casos.forEach((c) => {
     const div = document.createElement('div');
     div.className = 'caso-card';
     div.innerHTML = `
-      <div class="caso-header" style="cursor:pointer;">
+      <div class="caso-header" style="cursor:pointer;user-select:none;">
         <span class="caso-bandera">${c.bandera}</span>
         <span class="caso-pais">${c.pais}</span>
         <span class="caso-promesa">"${c.promesa}"</span>
@@ -1072,19 +1072,19 @@ function renderCasos() {
       </div>
     `;
     const header = div.querySelector('.caso-header');
-    function toggle(e) {
+    let lastToggle = 0;
+    function doToggle(e) {
+      e.preventDefault();
       e.stopPropagation();
+      const now = Date.now();
+      if (now - lastToggle < 300) return;
+      lastToggle = now;
       div.classList.toggle('expandido');
     }
-    header.addEventListener('click', toggle);
-    header.addEventListener('touchend', toggle, {passive: false});
+    header.addEventListener('touchstart', doToggle, {passive: false});
+    header.addEventListener('click', doToggle);
     grid.appendChild(div);
   });
-}
-
-function toggleCaso(i) {
-  const cards = document.querySelectorAll('.caso-card');
-  if (cards[i]) cards[i].classList.toggle('expandido');
 }
 
 // MITOS
@@ -1124,11 +1124,11 @@ const mitos = [
 function renderMitos() {
   const cont = document.getElementById('mitosContainer');
   cont.innerHTML = '';
-  mitos.forEach((m, i) => {
+  mitos.forEach((m) => {
     const div = document.createElement('div');
     div.className = 'mito-card';
     div.innerHTML = `
-      <div class="mito-pregunta" style="cursor:pointer;">
+      <div class="mito-pregunta" style="cursor:pointer;user-select:none;">
         <span class="mito-texto">${m.mito}</span>
         <span class="mito-badge falso">Mito</span>
       </div>
@@ -1138,15 +1138,20 @@ function renderMitos() {
       </div>
     `;
     const preg = div.querySelector('.mito-pregunta');
-    function toggleM(e) {
+    let lastT = 0;
+    function doToggleM(e) {
+      e.preventDefault();
       e.stopPropagation();
+      const now = Date.now();
+      if (now - lastT < 300) return;
+      lastT = now;
       const badge = div.querySelector('.mito-badge');
       const revelado = div.classList.toggle('revelado');
       badge.textContent = revelado ? 'Revelado ✓' : 'Mito';
       badge.className = revelado ? 'mito-badge verdad' : 'mito-badge falso';
     }
-    preg.addEventListener('click', toggleM);
-    preg.addEventListener('touchend', toggleM, {passive: false});
+    preg.addEventListener('touchstart', doToggleM, {passive: false});
+    preg.addEventListener('click', doToggleM);
     cont.appendChild(div);
   });
 }
