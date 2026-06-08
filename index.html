@@ -783,12 +783,12 @@ footer {
   <nav>
     <div class="nav-logo">DES<span>PER</span>TAR</div>
     <div class="nav-tabs">
-      <button class="nav-tab activo" onclick="mostrarSeccion('inicio')">Inicio</button>
-      <button class="nav-tab" onclick="mostrarSeccion('casos')">Países</button>
-      <button class="nav-tab" onclick="mostrarSeccion('mitos')">Mitos</button>
-      <button class="nav-tab" onclick="mostrarSeccion('venezuela')">Venezuela</button>
-      <button class="nav-tab" onclick="mostrarSeccion('colombia')">Colombia</button>
-      <button class="nav-tab" onclick="mostrarSeccion('ia')">Pregunta a la IA</button>
+      <button class="nav-tab activo" onclick="mostrarSeccion('inicio',this)">Inicio</button>
+      <button class="nav-tab" onclick="mostrarSeccion('casos',this)">Países</button>
+      <button class="nav-tab" onclick="mostrarSeccion('mitos',this)">Mitos</button>
+      <button class="nav-tab" onclick="mostrarSeccion('venezuela',this)">Venezuela</button>
+      <button class="nav-tab" onclick="mostrarSeccion('colombia',this)">Colombia</button>
+      <button class="nav-tab" onclick="mostrarSeccion('ia',this)">Pregunta a la IA</button>
     </div>
   </nav>
 
@@ -984,11 +984,11 @@ function entrar() {
 }
 
 // NAVEGACIÓN
-function mostrarSeccion(id) {
+function mostrarSeccion(id, el) {
   document.querySelectorAll('.seccion').forEach(s => s.classList.remove('activa'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('activo'));
   document.getElementById('sec-'+id).classList.add('activa');
-  event.target.classList.add('activo');
+  if (el) el.classList.add('activo');
   window.scrollTo({top:0, behavior:'smooth'});
 }
 
@@ -1045,8 +1045,9 @@ function renderCasos() {
   casos.forEach((c, i) => {
     const div = document.createElement('div');
     div.className = 'caso-card';
+    div.dataset.idx = i;
     div.innerHTML = `
-      <div class="caso-header" onclick="toggleCaso(${i})">
+      <div class="caso-header">
         <span class="caso-bandera">${c.bandera}</span>
         <span class="caso-pais">${c.pais}</span>
         <span class="caso-promesa">"${c.promesa}"</span>
@@ -1066,13 +1067,16 @@ function renderCasos() {
         <div class="caso-dato">📌 ${c.dato}</div>
       </div>
     `;
+    div.querySelector('.caso-header').addEventListener('click', function() {
+      div.classList.toggle('expandido');
+    });
     grid.appendChild(div);
   });
 }
 
 function toggleCaso(i) {
   const cards = document.querySelectorAll('.caso-card');
-  cards[i].classList.toggle('expandido');
+  if (cards[i]) cards[i].classList.toggle('expandido');
 }
 
 // MITOS
@@ -1115,7 +1119,7 @@ function renderMitos() {
     const div = document.createElement('div');
     div.className = 'mito-card';
     div.innerHTML = `
-      <div class="mito-pregunta" onclick="toggleMito(${i})">
+      <div class="mito-pregunta">
         <span class="mito-texto">${m.mito}</span>
         <span class="mito-badge falso" id="badge-${i}">Mito</span>
       </div>
@@ -1124,6 +1128,12 @@ function renderMitos() {
         ${m.fuente ? `<div class="mito-fuente">📚 ${m.fuente}</div>` : ''}
       </div>
     `;
+    div.querySelector('.mito-pregunta').addEventListener('click', function() {
+      const badge = div.querySelector('.mito-badge');
+      const revelado = div.classList.toggle('revelado');
+      badge.textContent = revelado ? 'Revelado ✓' : 'Mito';
+      badge.className = revelado ? 'mito-badge verdad' : 'mito-badge falso';
+    });
     cont.appendChild(div);
   });
 }
@@ -1241,11 +1251,9 @@ async function enviarMensaje() {
 
 function preguntaRapida(el) {
   document.getElementById('chatInput').value = el.textContent;
-  mostrarSeccion('ia');
-  // actualizar tab activo
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('activo'));
-  document.querySelectorAll('.nav-tab')[5].classList.add('activo');
-  enviarMensaje();
+  const tabIA = document.querySelector('.nav-tab:last-child');
+  mostrarSeccion('ia', tabIA);
+  setTimeout(() => enviarMensaje(), 100);
 }
 
 function agregarMensaje(texto, tipo) {
