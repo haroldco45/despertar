@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DESPERTAR — La Verdad que Nadie te Contó</title>
+<meta property="og:title" content="DESPERTAR — La Verdad sobre el Comunismo">
+<meta property="og:description" content="¿Crees en las promesas? Descubre lo que pasó en los países que las creyeron.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Crimson+Pro:ital,wght@0,300;0,600;1,300&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --negro: #080808;
+  --rojo: #D62828;
+  --rojo-oscuro: #8B0000;
+  --dorado: #F4A61B;
+  --crema: #F0E6D3;
+  --gris: #2A2A2A;
+  --texto: #E8DDD0;
+  --verde-cuba: #009B4E;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--negro);
+  color: var(--texto);
+  font-family: 'Crimson Pro', Georgia, serif;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* CURSOR PERSONALIZADO */
+.cursor {
+  width: 12px; height: 12px;
+  border: 2px solid var(--dorado);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  transition: transform 0.15s ease, background 0.15s ease;
+  transform: translate(-50%, -50%);
+}
+.cursor-dot {
+  width: 4px; height: 4px;
+  background: var(--rojo);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+}
+body:hover .cursor { opacity: 1; }
+
+/* PANTALLA DE ENTRADA */
+#entrada {
+  position: fixed;
+  inset: 0;
+  background: var(--negro);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  transition: opacity 1s ease, visibility 1s ease;
+}
+#entrada.oculto {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.logo-entrada {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(60px, 15vw, 160px);
+  letter-spacing: 0.1em;
+  color: var(--crema);
+  line-height: 0.85;
+  text-align: center;
+  animation: aparecer 1.5s ease forwards;
+}
+.logo-entrada span {
+  display: block;
+  color: var(--rojo);
+  font-size: 0.35em;
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+}
+
+.subtitulo-entrada {
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(11px, 2vw, 14px);
+  color: var(--dorado);
+  letter-spacing: 0.15em;
+  margin-top: 2rem;
+  text-align: center;
+  animation: aparecer 2s 0.5s ease both;
+  max-width: 500px;
+  line-height: 1.8;
+}
+
+.btn-entrar {
+  margin-top: 3rem;
+  padding: 1rem 3rem;
+  background: transparent;
+  border: 2px solid var(--dorado);
+  color: var(--dorado);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: 0.3em;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  animation: aparecer 2s 1s ease both;
+  transition: color 0.3s;
+}
+.btn-entrar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--dorado);
+  transform: translateX(-101%);
+  transition: transform 0.3s ease;
+  z-index: -1;
+}
+.btn-entrar:hover::before { transform: translateX(0); }
+.btn-entrar:hover { color: var(--negro); }
+
+/* RUIDO DE FONDO */
+.noise {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
+/* APP PRINCIPAL */
+#app {
+  min-height: 100vh;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+#app.visible { opacity: 1; }
+
+/* NAV */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background: rgba(8,8,8,0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(244,166,27,0.2);
+}
+.nav-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.5rem;
+  color: var(--dorado);
+  letter-spacing: 0.2em;
+}
+.nav-logo span { color: var(--rojo); }
+.nav-tabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.nav-tab {
+  padding: 0.4rem 1rem;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--texto);
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  letter-spacing: 0.1em;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+.nav-tab:hover, .nav-tab.activo {
+  border-color: var(--dorado);
+  color: var(--dorado);
+  background: rgba(244,166,27,0.08);
+}
+
+/* SECCIONES */
+.seccion {
+  display: none;
+  min-height: 100vh;
+  padding: 3rem 1.5rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.seccion.activa { display: block; }
+
+/* HERO */
+.hero {
+  padding: 4rem 1.5rem 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+  position: relative;
+}
+.hero-titulo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(48px, 10vw, 100px);
+  line-height: 0.9;
+  color: var(--crema);
+  position: relative;
+}
+.hero-titulo .rojo { color: var(--rojo); }
+.hero-titulo .linea-dorada {
+  display: block;
+  width: 80px;
+  height: 3px;
+  background: var(--dorado);
+  margin: 1.5rem 0;
+}
+.hero-desc {
+  font-size: clamp(17px, 2.5vw, 22px);
+  line-height: 1.7;
+  color: var(--texto);
+  max-width: 600px;
+  font-style: italic;
+}
+
+/* CONTADOR DE PAÍSES */
+.contador-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1px;
+  background: rgba(244,166,27,0.15);
+  border: 1px solid rgba(244,166,27,0.15);
+  margin: 3rem 0;
+}
+.contador-item {
+  background: var(--negro);
+  padding: 1.5rem 1rem;
+  text-align: center;
+  transition: background 0.3s;
+}
+.contador-item:hover { background: rgba(214,40,40,0.08); }
+.contador-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 3rem;
+  color: var(--rojo);
+  display: block;
+  line-height: 1;
+}
+.contador-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--dorado);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 0.5rem;
+}
+
+/* CASOS HISTÓRICOS */
+.casos-grid {
+  display: grid;
+  gap: 1px;
+  background: rgba(255,255,255,0.05);
+}
+.caso-card {
+  background: var(--negro);
+  padding: 2rem;
+  border-left: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.caso-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(214,40,40,0.05), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.caso-card:hover { border-left-color: var(--rojo); }
+.caso-card:hover::before { opacity: 1; }
+.caso-card.expandido { border-left-color: var(--dorado); background: var(--gris); }
+
+.caso-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.caso-bandera { font-size: 2rem; flex-shrink: 0; }
+.caso-pais {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  color: var(--crema);
+  letter-spacing: 0.05em;
+}
+.caso-promesa {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--verde-cuba);
+  letter-spacing: 0.1em;
+  background: rgba(0,155,78,0.1);
+  padding: 0.2rem 0.6rem;
+  border: 1px solid rgba(0,155,78,0.3);
+  text-transform: uppercase;
+}
+.caso-flecha {
+  margin-left: auto;
+  color: var(--dorado);
+  font-size: 1.2rem;
+  transition: transform 0.3s;
+}
+.caso-card.expandido .caso-flecha { transform: rotate(90deg); }
+
+.caso-contenido {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease;
+}
+.caso-card.expandido .caso-contenido { max-height: 1000px; }
+
+.caso-body {
+  padding-top: 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+@media(max-width:600px){ .caso-body { grid-template-columns: 1fr; } }
+
+.caso-col h4 {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 0.8rem;
+}
+.caso-col.promesas h4 { color: var(--verde-cuba); }
+.caso-col.realidad h4 { color: var(--rojo); }
+.caso-col ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.caso-col ul li {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  padding-left: 1.2rem;
+  position: relative;
+  color: var(--texto);
+}
+.caso-col.promesas ul li::before { content: '✦'; position: absolute; left: 0; color: var(--verde-cuba); font-size: 0.6rem; top: 4px; }
+.caso-col.realidad ul li::before { content: '✗'; position: absolute; left: 0; color: var(--rojo); font-size: 0.8rem; top: 2px; }
+
+.caso-dato {
+  margin-top: 1rem;
+  padding: 0.8rem 1rem;
+  background: rgba(214,40,40,0.1);
+  border-left: 2px solid var(--rojo);
+  font-family: 'Space Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--dorado);
+  font-style: italic;
+}
+
+/* SECCIÓN IA */
+.ia-container {
+  background: var(--gris);
+  border: 1px solid rgba(244,166,27,0.2);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+.ia-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: rgba(244,166,27,0.08);
+  border-bottom: 1px solid rgba(244,166,27,0.2);
+}
+.ia-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--dorado);
+  animation: pulso 2s infinite;
+}
+.ia-titulo {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--dorado);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.preguntas-rapidas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.pregunta-chip {
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 1px solid rgba(244,166,27,0.3);
+  color: var(--texto);
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: 1px;
+}
+.pregunta-chip:hover {
+  background: rgba(244,166,27,0.1);
+  border-color: var(--dorado);
+  color: var(--dorado);
+}
+
+.chat-area {
+  padding: 1.5rem;
+  min-height: 300px;
+  max-height: 500px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.chat-area::-webkit-scrollbar { width: 3px; }
+.chat-area::-webkit-scrollbar-thumb { background: var(--dorado); }
+
+.msg {
+  display: flex;
+  gap: 0.8rem;
+  animation: slideIn 0.3s ease;
+}
+.msg-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+  font-family: 'Space Mono', monospace;
+}
+.msg.usuario .msg-avatar { background: rgba(244,166,27,0.2); color: var(--dorado); border: 1px solid var(--dorado); }
+.msg.ia .msg-avatar { background: rgba(214,40,40,0.2); color: var(--rojo); border: 1px solid var(--rojo); }
+
+.msg-burbuja {
+  flex: 1;
+  padding: 0.8rem 1rem;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  border-radius: 2px;
+}
+.msg.usuario .msg-burbuja {
+  background: rgba(244,166,27,0.08);
+  border: 1px solid rgba(244,166,27,0.2);
+  color: var(--crema);
+}
+.msg.ia .msg-burbuja {
+  background: rgba(8,8,8,0.8);
+  border: 1px solid rgba(255,255,255,0.07);
+  color: var(--texto);
+}
+
+.chat-input-area {
+  display: flex;
+  gap: 0;
+  border-top: 1px solid rgba(244,166,27,0.2);
+}
+.chat-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 1rem 1.5rem;
+  color: var(--crema);
+  font-family: 'Crimson Pro', serif;
+  font-size: 1rem;
+  outline: none;
+}
+.chat-input::placeholder { color: rgba(240,230,211,0.3); font-style: italic; }
+.btn-enviar {
+  padding: 0 1.5rem;
+  background: var(--rojo);
+  border: none;
+  color: white;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-enviar:hover { background: var(--rojo-oscuro); }
+.btn-enviar:disabled { background: var(--gris); cursor: not-allowed; }
+
+/* MITOS */
+.mito-card {
+  background: var(--gris);
+  margin-bottom: 1px;
+  overflow: hidden;
+  border-left: 3px solid var(--verde-cuba);
+  cursor: pointer;
+  transition: border-color 0.3s;
+}
+.mito-card.revelado { border-left-color: var(--rojo); }
+
+.mito-pregunta {
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.mito-texto {
+  font-family: 'Crimson Pro', serif;
+  font-size: 1.1rem;
+  font-style: italic;
+  color: var(--crema);
+  flex: 1;
+}
+.mito-badge {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.55rem;
+  padding: 0.2rem 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  margin-left: 1rem;
+}
+.mito-badge.falso { background: rgba(0,155,78,0.15); color: var(--verde-cuba); border: 1px solid var(--verde-cuba); }
+.mito-badge.verdad { background: rgba(214,40,40,0.15); color: var(--rojo); border: 1px solid var(--rojo); }
+
+.mito-respuesta {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+  padding: 0 1.5rem;
+  font-size: 0.98rem;
+  line-height: 1.7;
+  color: var(--texto);
+  border-top: 0px solid transparent;
+  transition: all 0.4s ease;
+}
+.mito-card.revelado .mito-respuesta {
+  max-height: 400px;
+  padding: 1.2rem 1.5rem;
+  border-top: 1px solid rgba(214,40,40,0.2);
+}
+.mito-fuente {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--dorado);
+  margin-top: 0.8rem;
+  letter-spacing: 0.05em;
+}
+
+/* TIMELINE VENEZUELA */
+.timeline {
+  position: relative;
+  padding-left: 2rem;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0; bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--dorado), var(--rojo), var(--negro));
+}
+.tl-item {
+  position: relative;
+  margin-bottom: 2rem;
+  padding: 1.2rem 1.5rem;
+  background: var(--gris);
+  border-right: none;
+  animation: fadeInLeft 0.5s ease both;
+}
+.tl-item::before {
+  content: '';
+  position: absolute;
+  left: -2.4rem;
+  top: 1.5rem;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--dorado);
+  background: var(--negro);
+}
+.tl-anio {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  color: var(--dorado);
+  display: block;
+  line-height: 1;
+}
+.tl-titulo {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--rojo);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin: 0.3rem 0;
+}
+.tl-desc {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--texto);
+}
+
+/* COLOMBIA SECTION */
+.colombia-alerta {
+  background: linear-gradient(135deg, rgba(214,40,40,0.15), rgba(8,8,8,0.9));
+  border: 1px solid rgba(214,40,40,0.4);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+.colombia-alerta::before {
+  content: 'COLOMBIA 2026';
+  position: absolute;
+  top: 1rem; right: 1.5rem;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.8rem;
+  color: rgba(214,40,40,0.3);
+  letter-spacing: 0.3em;
+}
+.alerta-titulo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2rem;
+  color: var(--rojo);
+  margin-bottom: 1rem;
+}
+.alerta-body {
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.señales-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1px;
+  background: rgba(255,255,255,0.05);
+  margin-top: 2rem;
+}
+.señal-item {
+  background: var(--negro);
+  padding: 1.5rem;
+  border-top: 2px solid transparent;
+  transition: border-color 0.3s, background 0.3s;
+}
+.señal-item:hover {
+  border-top-color: var(--rojo);
+  background: var(--gris);
+}
+.señal-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.5rem;
+  color: rgba(214,40,40,0.3);
+  line-height: 1;
+}
+.señal-titulo {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--dorado);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin: 0.3rem 0;
+}
+.señal-desc { font-size: 0.9rem; line-height: 1.5; color: var(--texto); }
+
+/* SECCIÓN TÍTULOS */
+.seccion-titulo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(32px, 6vw, 60px);
+  color: var(--crema);
+  line-height: 0.9;
+  margin-bottom: 0.5rem;
+}
+.seccion-titulo span { color: var(--dorado); }
+.seccion-subtitulo {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  color: rgba(244,166,27,0.5);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+  display: block;
+}
+
+/* FOOTER */
+footer {
+  text-align: center;
+  padding: 2rem;
+  border-top: 1px solid rgba(244,166,27,0.1);
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  color: rgba(240,230,211,0.3);
+  letter-spacing: 0.1em;
+  line-height: 2;
+}
+
+/* ANIMACIONES */
+@keyframes aparecer {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulso {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes fadeInLeft {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes typing {
+  0%,80%,100% { opacity: 0; }
+  40% { opacity: 1; }
+}
+.typing span {
+  display: inline-block;
+  width: 6px; height: 6px;
+  background: var(--dorado);
+  border-radius: 50%;
+  margin: 0 2px;
+  animation: typing 1.2s infinite;
+}
+.typing span:nth-child(2) { animation-delay: 0.2s; }
+.typing span:nth-child(3) { animation-delay: 0.4s; }
+
+@media(max-width:600px){
+  nav { padding: 0.8rem 1rem; }
+  .nav-tabs { gap: 0.3rem; }
+  .nav-tab { padding: 0.3rem 0.6rem; font-size: 0.55rem; }
+}
+
+/* Typing cursor */
+.cursor-typing::after {
+  content: '|';
+  animation: pulso 0.8s infinite;
+  color: var(--dorado);
+}
+
+.highlight-rojo { color: var(--rojo); font-weight: 600; }
+.highlight-dorado { color: var(--dorado); font-style: italic; }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="noise"></div>
+
+<!-- PANTALLA ENTRADA -->
+<div id="entrada">
+  <div class="logo-entrada">
+    DESPER<span>TAR</span>
+  </div>
+  <p class="subtitulo-entrada">
+    La verdad que el comunismo nunca quiere que conozcas<br>
+    Una experiencia para mentes que aún pueden despertar
+  </p>
+  <button class="btn-entrar" onclick="entrar()">ENTRAR — SI TIENES VALOR</button>
+</div>
+
+<!-- APP PRINCIPAL -->
+<div id="app">
+  <nav>
+    <div class="nav-logo">DES<span>PER</span>TAR</div>
+    <div class="nav-tabs">
+      <button class="nav-tab activo" onclick="mostrarSeccion('inicio')">Inicio</button>
+      <button class="nav-tab" onclick="mostrarSeccion('casos')">Países</button>
+      <button class="nav-tab" onclick="mostrarSeccion('mitos')">Mitos</button>
+      <button class="nav-tab" onclick="mostrarSeccion('venezuela')">Venezuela</button>
+      <button class="nav-tab" onclick="mostrarSeccion('colombia')">Colombia</button>
+      <button class="nav-tab" onclick="mostrarSeccion('ia')">Pregunta a la IA</button>
+    </div>
+  </nav>
+
+  <!-- INICIO -->
+  <div id="sec-inicio" class="seccion activa">
+    <div class="hero">
+      <h1 class="hero-titulo">
+        TE<br>
+        MINTIE<span class="rojo">RON.</span>
+        <span class="linea-dorada"></span>
+      </h1>
+      <p class="hero-desc">
+        El comunismo ha prometido lo mismo en 20 países distintos. 
+        El resultado fue siempre el mismo. Esta app te muestra lo que pasó — 
+        con datos, con historia, con testimonios reales.
+      </p>
+    </div>
+
+    <div class="contador-grid">
+      <div class="contador-item">
+        <span class="contador-num" data-target="20">0</span>
+        <div class="contador-label">Países que creyeron</div>
+      </div>
+      <div class="contador-item">
+        <span class="contador-num" data-target="100">0</span>
+        <div class="contador-label">Millones de muertos</div>
+      </div>
+      <div class="contador-item">
+        <span class="contador-num" data-target="0">0</span>
+        <div class="contador-label">Que alcanzaron prosperidad</div>
+      </div>
+      <div class="contador-item">
+        <span class="contador-num" data-target="3">0</span>
+        <div class="contador-label">En Latinoamérica hoy</div>
+      </div>
+    </div>
+
+    <div style="padding: 0 0 2rem;">
+      <h2 class="seccion-titulo">¿Por qué <span>funciona</span> el engaño?</h2>
+      <span class="seccion-subtitulo">// La fórmula de siempre</span>
+      <p style="font-size:1.05rem; line-height:1.8; max-width:700px; margin-bottom:1.5rem;">
+        El comunismo siempre llega prometiendo exactamente lo que el pueblo más necesita: 
+        igualdad, justicia, educación gratis, salud para todos. El problema no es la promesa. 
+        El problema es lo que viene <span class="highlight-rojo">después</span> de que toman el poder.
+      </p>
+      <p style="font-size:1.05rem; line-height:1.8; max-width:700px; font-style:italic; color:var(--dorado);">
+        "No nos quitaron la libertad de golpe. Nos la quitaron poco a poco, 
+        con cada ley que sonaba justa." — Testimonio cubano
+      </p>
+    </div>
+  </div>
+
+  <!-- CASOS HISTÓRICOS -->
+  <div id="sec-casos" class="seccion">
+    <h2 class="seccion-titulo">Lo que <span>pasó</span></h2>
+    <span class="seccion-subtitulo">// Casos reales — haz clic para expandir</span>
+
+    <div class="casos-grid" id="casosGrid"></div>
+  </div>
+
+  <!-- MITOS -->
+  <div id="sec-mitos" class="seccion">
+    <h2 class="seccion-titulo">Los <span>mitos</span> más comunes</h2>
+    <span class="seccion-subtitulo">// Lo que te dicen vs. lo que pasó realmente</span>
+
+    <div id="mitosContainer"></div>
+  </div>
+
+  <!-- VENEZUELA TIMELINE -->
+  <div id="sec-venezuela" class="seccion">
+    <h2 class="seccion-titulo">El caso <span>Venezuela</span></h2>
+    <span class="seccion-subtitulo">// El país más rico de Latinoamérica — destruido en 20 años</span>
+    
+    <p style="font-size:1.1rem; line-height:1.8; margin-bottom:2.5rem; font-style:italic;">
+      Venezuela tenía las mayores reservas de petróleo del mundo. 
+      Era el país más próspero de Latinoamérica. 
+      Luego llegó Chávez con <span class="highlight-dorado">"el socialismo del siglo XXI"</span>.
+    </p>
+
+    <div class="timeline" id="timelineVenezuela"></div>
+  </div>
+
+  <!-- COLOMBIA -->
+  <div id="sec-colombia" class="seccion">
+    <h2 class="seccion-titulo">Colombia <span>2026</span></h2>
+    <span class="seccion-subtitulo">// Las señales que debes reconocer</span>
+
+    <div class="colombia-alerta">
+      <div class="alerta-titulo">⚠ SEGUNDA VUELTA: 21 DE JUNIO</div>
+      <p class="alerta-body">
+        Colombia está en un momento histórico. Conocer lo que pasó en otros países 
+        no es hacer política de derecha ni de izquierda — es hacer política 
+        <span class="highlight-rojo">inteligente</span>. Estas son las señales de alerta 
+        que debes saber reconocer, vengan de quien vengan.
+      </p>
+    </div>
+
+    <h3 style="font-family:'Bebas Neue',sans-serif; font-size:1.6rem; color:var(--crema); margin-bottom:1rem;">
+      7 señales de alerta en cualquier gobierno
+    </h3>
+
+    <div class="señales-grid" id="señalesGrid"></div>
+
+    <div style="margin-top:3rem; padding:2rem; background:var(--gris); border-left:3px solid var(--dorado);">
+      <h3 style="font-family:'Bebas Neue',sans-serif; font-size:1.6rem; color:var(--dorado); margin-bottom:1rem;">
+        Tu voto el 21 de junio
+      </h3>
+      <p style="font-size:1.05rem; line-height:1.8; margin-bottom:1rem;">
+        Las mujeres de la película <em>Plantadas</em> perdieron el derecho a votar 
+        para siempre. Fueron encarceladas por atreverse a pensar diferente. 
+        Tú tienes ese derecho todavía. <span class="highlight-rojo">Úsalo con conocimiento.</span>
+      </p>
+      <p style="font-size:0.95rem; line-height:1.75; color:var(--dorado); font-style:italic;">
+        Informarte antes de votar es el acto más revolucionario que existe en democracia.
+      </p>
+    </div>
+  </div>
+
+  <!-- PREGUNTA A LA IA -->
+  <div id="sec-ia" class="seccion">
+    <h2 class="seccion-titulo">Pregunta a la <span>IA</span></h2>
+    <span class="seccion-subtitulo">// Análisis histórico sin censura</span>
+
+    <p style="font-size:1rem; line-height:1.7; margin-bottom:2rem; color:var(--texto);">
+      Aquí puedes preguntarle directamente a la inteligencia artificial sobre comunismo, 
+      historia, Venezuela, Cuba, Colombia. Sin filtros ideológicos. Solo hechos y análisis.
+    </p>
+
+    <div class="ia-container">
+      <div class="ia-header">
+        <div class="ia-dot"></div>
+        <span class="ia-titulo">Análisis Histórico IA — Activo</span>
+      </div>
+      
+      <div class="preguntas-rapidas">
+        <button class="pregunta-chip" onclick="preguntaRapida(this)">¿Por qué Cuba es pobre si tiene educación gratis?</button>
+        <button class="pregunta-chip" onclick="preguntaRapida(this)">¿Qué pasó con Venezuela cuando llegó el socialismo?</button>
+        <button class="pregunta-chip" onclick="preguntaRapida(this)">¿Por qué la gente huye de los países comunistas?</button>
+        <button class="pregunta-chip" onclick="preguntaRapida(this)">¿Es posible un comunismo "bueno"?</button>
+        <button class="pregunta-chip" onclick="preguntaRapida(this)">¿Qué pasó en Nicaragua con Ortega?</button>
+      </div>
+
+      <div class="chat-area" id="chatArea">
+        <div class="msg ia">
+          <div class="msg-avatar">IA</div>
+          <div class="msg-burbuja">
+            Hola. Estoy aquí para responderte con honestidad histórica. 
+            Puedes preguntarme sobre cualquier país, régimen, promesa política o hecho histórico. 
+            No tengo agenda ideológica — solo datos. <span class="highlight-dorado">¿Qué quieres saber?</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-input-area">
+        <input 
+          type="text" 
+          class="chat-input" 
+          id="chatInput"
+          placeholder="Escribe tu pregunta sobre comunismo, historia, Venezuela..."
+          onkeydown="if(event.key==='Enter') enviarMensaje()"
+        >
+        <button class="btn-enviar" id="btnEnviar" onclick="enviarMensaje()">ENVIAR</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div>DESPERTAR — Educación Política Para Jóvenes Colombianos</div>
+    <div>Basada en la película PLANTADAS (2022) — Lilo & Camilo Vilaplana</div>
+    <div style="margin-top:0.5rem; color:rgba(244,166,27,0.4);">
+      Desarrollada por Vibras Positivas HM — Derechos de Autor Reservados
+    </div>
+  </footer>
+</div>
+
+<script>
+// CURSOR
+const cursor = document.getElementById('cursor');
+const cursorDot = document.getElementById('cursorDot');
+document.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX + 'px';
+  cursor.style.top = e.clientY + 'px';
+  cursorDot.style.left = e.clientX + 'px';
+  cursorDot.style.top = e.clientY + 'px';
+});
+
+// ENTRADA
+function entrar() {
+  document.getElementById('entrada').classList.add('oculto');
+  const app = document.getElementById('app');
+  app.classList.add('visible');
+  setTimeout(() => animarContadores(), 500);
+}
+
+// NAVEGACIÓN
+function mostrarSeccion(id) {
+  document.querySelectorAll('.seccion').forEach(s => s.classList.remove('activa'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('activo'));
+  document.getElementById('sec-'+id).classList.add('activa');
+  event.target.classList.add('activo');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// CONTADORES ANIMADOS
+function animarContadores() {
+  document.querySelectorAll('[data-target]').forEach(el => {
+    const target = parseInt(el.dataset.target);
+    let current = 0;
+    const step = Math.ceil(target / 40);
+    const interval = setInterval(() => {
+      current = Math.min(current + step, target);
+      el.textContent = current + (target === 100 ? 'M+' : target === 0 ? '' : '');
+      if (current >= target) clearInterval(interval);
+    }, 40);
+  });
+}
+
+// DATOS CASOS HISTÓRICOS
+const casos = [
+  {
+    bandera: '🇨🇺', pais: 'CUBA', promesa: 'La revolución del pueblo',
+    promesas: ['Educación gratuita para todos', 'Salud universal', 'Igualdad social', 'Fin de la corrupción yanqui'],
+    realidad: ['65 años sin elecciones libres', 'Salario promedio: $30 USD al mes', 'Cárceles llenas de opositores', 'Éxodo masivo: 2 millones en la última década'],
+    dato: '"Plantadas" — más de 1,000 mujeres encarceladas solo por pensar diferente'
+  },
+  {
+    bandera: '🇻🇪', pais: 'VENEZUELA', promesa: 'Socialismo del siglo XXI',
+    promesas: ['Petróleo para el pueblo', 'Eliminar la pobreza', 'Soberanía nacional', 'Igualdad y dignidad'],
+    realidad: ['7 millones de migrantes — el mayor éxodo de América Latina', 'Inflación que llegó al 1.000.000%', 'Escasez de alimentos y medicamentos', 'Represión sistemática de opositores'],
+    dato: 'De ser el país más rico de Latam, pasó a tener el 94% en pobreza (ENCOVI 2021)'
+  },
+  {
+    bandera: '🇳🇮', pais: 'NICARAGUA', promesa: 'Revolución sandinista',
+    promesas: ['Democracia popular', 'Justicia para los pobres', 'Fin del somocismo', 'Libertad y soberanía'],
+    realidad: ['Ortega lleva 17 años en el poder', 'Opositores encarcelados o exiliados', 'Obispos y sacerdotes presos', 'Cierre de universidades y ONG'],
+    dato: 'En 2023, Ortega revocó la ciudadanía de más de 300 opositores'
+  },
+  {
+    bandera: '🇰🇵', pais: 'COREA DEL NORTE', promesa: 'El paraíso obrero',
+    promesas: ['Igualdad absoluta', 'El estado cuida a todos', 'Soberanía total', 'El pueblo en el poder'],
+    realidad: ['El líder decide quién come y quién no', '200.000 personas en campos de trabajo', 'Sin internet, sin prensa libre, sin viajes', '40% de la población en inseguridad alimentaria'],
+    dato: 'Es el único país del mundo donde el lujo total y el hambre masiva coexisten en la misma ciudad'
+  },
+  {
+    bandera: '🇺🇸', pais: 'UNIÓN SOVIÉTICA', promesa: 'El comunismo perfecto',
+    promesas: ['Igualdad entre todos', 'El fin del capitalismo explotador', 'Una sociedad sin clases', 'El estado protege al obrero'],
+    realidad: ['Gulag: 18 millones de presos políticos', 'Hambruna del Holodomor: 3.5M muertos en Ucrania', 'Cortina de hierro: prohibido salir del país', 'Colapsó después de 70 años de miseria'],
+    dato: 'El "Libro Negro del Comunismo" (Courtois, 1997) documenta 94 millones de muertes atribuibles a regímenes comunistas del siglo XX'
+  }
+];
+
+function renderCasos() {
+  const grid = document.getElementById('casosGrid');
+  casos.forEach((c, i) => {
+    const div = document.createElement('div');
+    div.className = 'caso-card';
+    div.innerHTML = `
+      <div class="caso-header" onclick="toggleCaso(${i})">
+        <span class="caso-bandera">${c.bandera}</span>
+        <span class="caso-pais">${c.pais}</span>
+        <span class="caso-promesa">"${c.promesa}"</span>
+        <span class="caso-flecha">▶</span>
+      </div>
+      <div class="caso-contenido">
+        <div class="caso-body">
+          <div class="caso-col promesas">
+            <h4>Lo que prometieron</h4>
+            <ul>${c.promesas.map(p=>`<li>${p}</li>`).join('')}</ul>
+          </div>
+          <div class="caso-col realidad">
+            <h4>Lo que pasó</h4>
+            <ul>${c.realidad.map(r=>`<li>${r}</li>`).join('')}</ul>
+          </div>
+        </div>
+        <div class="caso-dato">📌 ${c.dato}</div>
+      </div>
+    `;
+    grid.appendChild(div);
+  });
+}
+
+function toggleCaso(i) {
+  const cards = document.querySelectorAll('.caso-card');
+  cards[i].classList.toggle('expandido');
+}
+
+// MITOS
+const mitos = [
+  {
+    mito: '"El comunismo es malo solo porque EE.UU. lo saboteó."',
+    respuesta: 'Cuba lleva 65 años con el mismo régimen. China tiene la segunda economía del mundo pero con partido único. Corea del Norte no tiene bloqueo severo y es el país más pobre del mundo. El fracaso comunista es interno, no externo: cuando el Estado controla todo, la iniciativa muere, la corrupción florece y la represión se vuelve necesaria para sostener el sistema.',
+    fuente: 'Fuente: "Why Nations Fail" — Acemoglu & Robinson (2012)'
+  },
+  {
+    mito: '"En Cuba hay mejor educación y salud que en Colombia."',
+    respuesta: 'Cuba tiene alta tasa de alfabetización, sí. Pero los médicos cubanos ganan $30/mes y huyen en masa cuando pueden. Los hospitales tienen equipos obsoletos. El sistema es vitrina para extranjeros. Mientras tanto, el cubano promedio no puede comprar medicamentos básicos porque no tiene acceso a divisas. Una buena estadística no equivale a una buena vida.',
+    fuente: 'Fuente: Reportes de Human Rights Watch sobre Cuba 2022-2024'
+  },
+  {
+    mito: '"El verdadero comunismo nunca se ha aplicado."',
+    respuesta: 'Este argumento es el escudo perfecto: si funciona, es comunismo; si fracasa, "no era el verdadero comunismo". Ha sido aplicado en 20+ países por líderes que estudiaron a Marx, Lenin y Mao. Si en todos los intentos el resultado es represión y pobreza, el problema no es la implementación — es la teoría misma, que ignora la naturaleza humana.',
+    fuente: 'Fuente: "The Road to Serfdom" — Friedrich Hayek (1944)'
+  },
+  {
+    mito: '"Los que critican el comunismo son ricos que defienden sus privilegios."',
+    respuesta: 'Los más férreos críticos del comunismo son los que lo vivieron: cubanos en balsa, venezolanos a pie en el Darién, nicaragüenses exiliados. Los que más sufren con el socialismo de Estado son exactamente los pobres que prometió liberar. La crítica al comunismo viene más fuerte desde abajo que desde arriba.',
+    fuente: 'Fuente: Testimonios documentados en "Plantadas" (2022) y "Plantados" (2021)'
+  },
+  {
+    mito: '"Una asamblea constituyente es simplemente actualizar la ley."',
+    respuesta: 'En Venezuela (1999), Chávez usó la constituyente para reescribir las reglas del juego a su favor: extendió su mandato, eliminó contrapesos, concentró poderes. En Bolivia y Ecuador ocurrió lo mismo. Una constituyente convocada por un gobierno con tendencias autoritarias es históricamente un instrumento para perpetuarse en el poder, no para fortalecer la democracia.',
+    fuente: 'Fuente: CIDH — Informes sobre Venezuela y Bolivia 2007-2019'
+  },
+  {
+    mito: '"Los jóvenes que apoyan el socialismo son los que más aman al pueblo."',
+    respuesta: 'Amar al pueblo no es querer para él lo que ya fracasó 20 veces. Amar al pueblo es informarse, pensar críticamente y rechazar promesas que ya conocemos el final. Los jóvenes cubanos que hoy huyen, los venezolanos que cruzaron el Darién — ellos también amaban su país. Y les mintieron exactamente con el mismo discurso.',
+    fuente: ''
+  }
+];
+
+function renderMitos() {
+  const cont = document.getElementById('mitosContainer');
+  mitos.forEach((m, i) => {
+    const div = document.createElement('div');
+    div.className = 'mito-card';
+    div.innerHTML = `
+      <div class="mito-pregunta" onclick="toggleMito(${i})">
+        <span class="mito-texto">${m.mito}</span>
+        <span class="mito-badge falso" id="badge-${i}">Mito</span>
+      </div>
+      <div class="mito-respuesta">
+        ${m.respuesta}
+        ${m.fuente ? `<div class="mito-fuente">📚 ${m.fuente}</div>` : ''}
+      </div>
+    `;
+    cont.appendChild(div);
+  });
+}
+
+function toggleMito(i) {
+  const cards = document.querySelectorAll('.mito-card');
+  const badge = document.getElementById('badge-'+i);
+  const revelado = cards[i].classList.toggle('revelado');
+  badge.textContent = revelado ? 'Revelado ✓' : 'Mito';
+  badge.className = revelado ? 'mito-badge verdad' : 'mito-badge falso';
+}
+
+// TIMELINE VENEZUELA
+const timelineData = [
+  { anio:'1998', titulo:'CHÁVEZ LLEGA AL PODER', desc:'Prometió acabar con la corrupción y dar el petróleo al pueblo. El PIB era de $4,105 per cápita. Venezuela era el más próspero de Latinoamérica.' },
+  { anio:'1999', titulo:'NUEVA CONSTITUYENTE', desc:'Convocó una asamblea constituyente para "refundar la patria". Le otorgó poderes especiales y extendió su mandato.' },
+  { anio:'2002', titulo:'CONTROL DEL PETRÓLEO', desc:'Tomó el control total de PDVSA, la petrolera estatal. Despidió a 18,000 técnicos y profesionales. La producción comenzó a caer.' },
+  { anio:'2007', titulo:'REELECCIÓN INDEFINIDA', desc:'Intentó (y logró en 2009) eliminar el límite de reelección presidencial. Dijo que era "la voluntad del pueblo".' },
+  { anio:'2013', titulo:'MUERTE DE CHÁVEZ / MADURO', desc:'Muere Chávez. Asume Maduro. La escasez de alimentos y medicamentos se vuelve crítica. El gobierno culpa a "la guerra económica".' },
+  { anio:'2016', titulo:'HIPERINFLACIÓN Y HAMBRE', desc:'Inflación supera el 800%. Venezolanos buscan comida en la basura. Más de 30 kilos de peso perdido promedio por familia en el año.' },
+  { anio:'2019', titulo:'7 MILLONES HAN HUIDO', desc:'El mayor éxodo en la historia de América Latina. Más que los refugiados sirios en su peor momento. Todo desde el país más rico del continente.' },
+  { anio:'2024', titulo:'HOY: SIN SALIDA', desc:'Maduro "ganó" unas elecciones sin transparencia. La comunidad internacional rechazó los resultados. Venezuela sigue siendo una cárcel a cielo abierto.' }
+];
+
+function renderTimeline() {
+  const tl = document.getElementById('timelineVenezuela');
+  timelineData.forEach(t => {
+    const div = document.createElement('div');
+    div.className = 'tl-item';
+    div.innerHTML = `
+      <span class="tl-anio">${t.anio}</span>
+      <div class="tl-titulo">${t.titulo}</div>
+      <p class="tl-desc">${t.desc}</p>
+    `;
+    tl.appendChild(div);
+  });
+}
+
+// SEÑALES COLOMBIA
+const señales = [
+  { num:'01', titulo:'No reconocer resultados', desc:'Cuando un candidato deslegitima el proceso electoral antes de perder, es señal de que no aceptará perder.' },
+  { num:'02', titulo:'Enemigo permanente', desc:'Todo régimen que necesita un enemigo eterno (el uribismo, el imperialismo, los ricos) para justificarse debe alertarte.' },
+  { num:'03', titulo:'Reescribir la Constitución', desc:'La constituyente es el instrumento histórico favorito para extender el poder. Siempre llega disfrazada de "voluntad popular".' },
+  { num:'04', titulo:'Control de medios', desc:'Cuando un gobierno presiona, compra o amenaza medios de comunicación, la democracia está en peligro.' },
+  { num:'05', titulo:'Polarización extrema', desc:'Dividir a la sociedad en "buenos" (el pueblo, nosotros) y "malos" (los ricos, ellos) es manipulación, no política.' },
+  { num:'06', titulo:'Promesas sin límite', desc:'Quien promete todo gratis sin explicar cómo se paga está mintiendo o preparando una Venezuela.' },
+  { num:'07', titulo:'Culpar siempre al anterior', desc:'Un buen gobierno soluciona problemas. Uno malo solo busca culpables para no tener que rendir cuentas.' }
+];
+
+function renderSeñales() {
+  const grid = document.getElementById('señalesGrid');
+  señales.forEach(s => {
+    const div = document.createElement('div');
+    div.className = 'señal-item';
+    div.innerHTML = `
+      <div class="señal-num">${s.num}</div>
+      <div class="señal-titulo">${s.titulo}</div>
+      <p class="señal-desc">${s.desc}</p>
+    `;
+    grid.appendChild(div);
+  });
+}
+
+// CHAT CON IA
+const historialChat = [];
+const systemPrompt = `Eres un historiador y analista político especializado en regímenes comunistas y socialistas de América Latina y el mundo. Respondes con datos históricos verificables, testimonios reales y análisis crítico. Tu audiencia son jóvenes colombianos que están aprendiendo sobre política. 
+
+Reglas:
+- Responde en español, de forma directa y clara
+- Usa datos concretos (años, cifras, nombres)
+- No te desvíes hacia polémicas — cíñete a hechos documentados
+- Cuando sea relevante, conecta con la realidad colombiana actual
+- Máximo 200 palabras por respuesta
+- Sé honesto aunque la respuesta sea incómoda
+- Contexto: estamos en Colombia, en plena campaña electoral de segunda vuelta 2026`;
+
+async function enviarMensaje() {
+  const input = document.getElementById('chatInput');
+  const btn = document.getElementById('btnEnviar');
+  const texto = input.value.trim();
+  if (!texto) return;
+
+  agregarMensaje(texto, 'usuario');
+  input.value = '';
+  btn.disabled = true;
+
+  historialChat.push({ role: 'user', content: texto });
+
+  // Mostrar typing
+  const typingId = mostrarTyping();
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: historialChat
+      })
+    });
+    const data = await res.json();
+    const respuesta = data.content?.[0]?.text || 'No pude obtener respuesta.';
+    
+    quitarTyping(typingId);
+    agregarMensaje(respuesta, 'ia');
+    historialChat.push({ role: 'assistant', content: respuesta });
+  } catch (e) {
+    quitarTyping(typingId);
+    agregarMensaje('Error de conexión. Intenta de nuevo.', 'ia');
+  }
+  btn.disabled = false;
+}
+
+function preguntaRapida(el) {
+  document.getElementById('chatInput').value = el.textContent;
+  mostrarSeccion('ia');
+  // actualizar tab activo
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('activo'));
+  document.querySelectorAll('.nav-tab')[5].classList.add('activo');
+  enviarMensaje();
+}
+
+function agregarMensaje(texto, tipo) {
+  const chat = document.getElementById('chatArea');
+  const div = document.createElement('div');
+  div.className = `msg ${tipo}`;
+  div.innerHTML = `
+    <div class="msg-avatar">${tipo === 'usuario' ? 'TÚ' : 'IA'}</div>
+    <div class="msg-burbuja">${texto.replace(/\n/g, '<br>')}</div>
+  `;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function mostrarTyping() {
+  const chat = document.getElementById('chatArea');
+  const div = document.createElement('div');
+  const id = 'typing-' + Date.now();
+  div.id = id;
+  div.className = 'msg ia';
+  div.innerHTML = `<div class="msg-avatar">IA</div><div class="msg-burbuja typing"><span></span><span></span><span></span></div>`;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+  return id;
+}
+
+function quitarTyping(id) {
+  const el = document.getElementById(id);
+  if (el) el.remove();
+}
+
+// INIT
+renderCasos();
+renderMitos();
+renderTimeline();
+renderSeñales();
+</script>
+</body>
+</html>
